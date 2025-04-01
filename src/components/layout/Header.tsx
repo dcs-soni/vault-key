@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
   const handleSignOut = () => {
@@ -28,6 +30,10 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <header
@@ -69,6 +75,13 @@ const Header = () => {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-navy-800 transition-colors"
+              aria-label="Toggle Theme">
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
             {isAuthenticated ? (
               <Button onClick={handleSignOut} variant="outline">
                 Sign Out
