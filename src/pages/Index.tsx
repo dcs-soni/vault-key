@@ -1,5 +1,6 @@
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ArrowRight,
   Eye,
@@ -7,6 +8,7 @@ import {
   Lock,
   LockKeyhole,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +18,7 @@ export default function Index() {
   const handleGetStarted = () => {
     navigate("/auth");
   };
+
   return (
     <div className="min-h-screen bg-white dark:bg-navy overflow-hidden">
       <Header />
@@ -126,6 +129,90 @@ export default function Index() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Principles Section */}
+      <section className="relative py-24 px-4 overflow-hidden bg-linear-to-br from-white to-gray-50 dark:from-navy dark:to-navy-900">
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-linear-to-br from-teal/5 to-teal/2 opacity-50 blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] rounded-full bg-linear-to-br from-gold/5 to-gold/2 opacity-30 blur-3xl"></div>
+
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="mb-16 inline-flex items-start flex-col">
+            <div className="inline-flex items-center px-3 py-1 space-x-1 border border-teal/10 rounded-full text-xs font-medium text-teal mb-4">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+              <span>Core Principles</span>
+            </div>
+
+            <h2 className="font-poppins text-h2 font-bold mb-6 text-navy dark:text-white">
+              Designed for true privacy
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 text-body">
+              Your credentials remain exclusively yours
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: Sparkles,
+                title: "lorem ipsum",
+                description:
+                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+              },
+              {
+                icon: Sparkles,
+                title: "lorem ipsum",
+                description:
+                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+              },
+              {
+                icon: Sparkles,
+                title: "lorem ipsum",
+                description:
+                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+              },
+              {
+                icon: Sparkles,
+                title: "lorem ipsum",
+                description:
+                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+              },
+              {
+                icon: Sparkles,
+                title: "lorem ipsum",
+                description:
+                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+              },
+              {
+                icon: Sparkles,
+                title: "lorem ipsum",
+                description:
+                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+              },
+            ].map((feature, index) => (
+              <div key={index}>
+                <Card variant="hover" className="h-full group">
+                  <CardHeader>
+                    <div className="w-12 h-12 mb-6 relative overflow-hidden rounded-xl">
+                      <div className="absolute inset-0 bg-gradient-teal opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <feature.icon className="h-6 w-6 text-teal" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl mb-3">
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
           </div>
         </div>
       </section>
