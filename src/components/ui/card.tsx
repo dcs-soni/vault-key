@@ -40,7 +40,9 @@ CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  React.HTMLAttributes<HTMLDivElement> & {
+    gradient?: boolean;
+  }
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -82,6 +84,29 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
+// New component for parallax effect inside cards
+const CardParallax = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    depth?: 0 | 1 | 2;
+  }
+>(({ className, depth = 0, ...props }, ref) => {
+  const depthClasses = {
+    0: "parallax-layer-0",
+    1: "parallax-layer-1",
+    2: "parallax-layer-2",
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn("parallax-layer", depthClasses[depth], className)}
+      {...props}
+    />
+  );
+});
+CardParallax.displayName = "CardParallax";
+
 export {
   Card,
   CardHeader,
@@ -89,4 +114,5 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  CardParallax,
 };
