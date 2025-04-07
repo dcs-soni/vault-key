@@ -388,7 +388,7 @@ export default function Index() {
       </section>
 
       {/* CTA section */}
-      <section className="py-24 px-4 relative overflow-hidden bg-linear-to-br from-gray-50 to-white dark:from-navy dark:to-navy-900">
+      <section className="py-24 px-4 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white dark:from-navy dark:to-navy-900">
         <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-teal/10 blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gold/5 blur-3xl"></div>
 
