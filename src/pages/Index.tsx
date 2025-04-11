@@ -19,20 +19,108 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAnimation } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export default function Index() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [activeSection, setActiveSection] = useState("hero");
+
   const navigate = useNavigate();
+
+  const heroRef = useRef<HTMLElement>(null);
+  const featuresRef = useRef<HTMLElement>(null);
+  const howItWorksRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
+
+  const heroControls = useAnimation();
 
   const handleGetStarted = () => {
     navigate("/auth");
   };
 
+  const scrollToSection = (ref: React.RefObject<HTMLElement | null>) => {
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleScroll = () => {
+      if (
+        !heroRef.current ||
+        !featuresRef.current ||
+        !howItWorksRef.current ||
+        !ctaRef.current
+      )
+        return;
+
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      if (scrollPosition < featuresRef.current.offsetTop) {
+        setActiveSection("hero");
+      } else if (
+        scrollPosition >= featuresRef.current.offsetTop &&
+        scrollPosition < howItWorksRef.current.offsetTop
+      ) {
+        setActiveSection("features");
+      } else if (
+        scrollPosition >= howItWorksRef.current.offsetTop &&
+        scrollPosition < ctaRef.current.offsetTop
+      ) {
+        setActiveSection("howItWorks");
+      } else {
+        setActiveSection("cta");
+      }
+    };
+
+    heroControls.start({ opacity: 1, y: 0 });
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [heroControls]);
+
   return (
     <div className="min-h-screen bg-white dark:bg-navy overflow-hidden">
       <Header />
 
+      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center space-y-4">
+        <div
+          className={`scroll-indicator-dot cursor-pointer ${
+            activeSection === "hero" ? "active" : ""
+          }`}
+          onClick={() => scrollToSection(heroRef)}
+        />
+        <div
+          className={`scroll-indicator-dot cursor-pointer ${
+            activeSection === "features" ? "active" : ""
+          }`}
+          onClick={() => scrollToSection(featuresRef)}
+        />
+        <div
+          className={`scroll-indicator-dot cursor-pointer ${
+            activeSection === "howItWorks" ? "active" : ""
+          }`}
+          onClick={() => scrollToSection(howItWorksRef)}
+        />
+        <div
+          className={`scroll-indicator-dot cursor-pointer ${
+            activeSection === "cta" ? "active" : ""
+          }`}
+          onClick={() => scrollToSection(ctaRef)}
+        />
+      </div>
+
       {/* Hero Secrtion */}
-      <section className="pt-32 pb-20 px-4 md:pt-40 md:pb-32 relative">
+      <section
+        ref={heroRef}
+        className="pt-32 pb-20 px-4 md:pt-40 md:pb-32 relative">
         <div className="particles-container">
           {[...Array(20)].map((_, i) => (
             <div
@@ -150,7 +238,9 @@ export default function Index() {
       </div>
 
       {/* Core Principles Section */}
-      <section className="relative py-24 px-4 overflow-hidden bg-linear-to-br from-white to-gray-50 dark:from-navy dark:to-navy-900">
+      <section
+        ref={featuresRef}
+        className="relative py-24 px-4 overflow-hidden bg-linear-to-br from-white to-gray-50 dark:from-navy dark:to-navy-900">
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-linear-to-br from-teal/5 to-teal/2 opacity-50 blur-xl"></div>
         <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] rounded-full bg-linear-to-br from-gold/5 to-gold/2 opacity-30 blur-xl"></div>
 
@@ -234,7 +324,9 @@ export default function Index() {
       </section>
 
       {/* How it Works Section */}
-      <section className="py-24 px-4 relative overflow-hidden">
+      <section
+        ref={howItWorksRef}
+        className="py-24 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-mesh opacity-20 -z-10"></div>
 
         <div className="container mx-auto max-w-6xl">
@@ -388,7 +480,9 @@ export default function Index() {
       </section>
 
       {/* CTA section */}
-      <section className="py-24 px-4 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white dark:from-navy dark:to-navy-900">
+      <section
+        ref={ctaRef}
+        className="py-24 px-4 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white dark:from-navy dark:to-navy-900">
         <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-teal/10 blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gold/5 blur-3xl"></div>
 
