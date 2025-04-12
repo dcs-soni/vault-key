@@ -46,31 +46,31 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-teal flex items-center justify-center text-white font-bold">
-              P
+              🔑
             </div>
             <span className="font-bold text-lg text-navy dark:text-white">
-              PassVault
+              vaultKey
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-10">
             <Link
               to="/"
               className="text-gray-600 hover:text-teal dark:text-gray-300 dark:hover:text-teal transition-colors">
               Home
             </Link>
-            {isAuthenticated && (
-              <Link
-                to="/dashboard"
-                className="text-gray-600 hover:text-teal dark:text-gray-300 dark:hover:text-teal transition-colors">
-                Dashboard
-              </Link>
-            )}
+            {/* {isAuthenticated && ( */}
+            <Link
+              to="/dashboard"
+              className="text-gray-600 hover:text-teal dark:text-gray-300 dark:hover:text-teal transition-colors">
+              Dashboard
+            </Link>
+            {/* )} */}
             <Link
               to="/generator"
               className="text-gray-600 hover:text-teal dark:text-gray-300 dark:hover:text-teal transition-colors">
-              Generator
+              Generate
             </Link>
           </nav>
 
@@ -83,11 +83,11 @@ const Header = () => {
             </button>
 
             {isAuthenticated ? (
-              <Button onClick={handleSignOut} variant="outline">
+              <Button onClick={handleSignOut} variant="glass">
                 Sign Out
               </Button>
             ) : (
-              <Button onClick={() => navigate("/auth")} variant="outline">
+              <Button onClick={() => navigate("/auth")} variant="glass">
                 Sign In
               </Button>
             )}
