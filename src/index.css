@@ -277,11 +277,40 @@
   }
 
   .floating-label-input input {
-    @apply h-14 px-4 pt-5 pb-2 w-full rounded-xl border-2 border-gray-100 dark:border-navy-800 bg-white dark:bg-navy peer focus:border-teal/50 focus:ring-2 focus:ring-teal/20 transition-all duration-300;
+    height: 3.5rem;
+    width: 100%;
+    padding: 1.25rem 1rem 0.5rem 1rem;
+    border-radius: 0.75rem;
+    border-width: 2px;
+    border-color: rgb(243 244 246);
+    background-color: white;
+    transition-property: all;
+    transition-duration: 300ms;
+  }
+
+  .floating-label-input input {
+    @apply outline-none;
+  }
+
+  .dark .floating-label-input input {
+    border-color: rgb(15 23 42);
+    background-color: rgb(15 23 42);
+  }
+
+  .floating-label-input input:focus {
+    border-color: rgb(45 212 191 / 0.5);
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) rgb(45 212 191 / 0.2);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
   }
 
   .floating-label-input label {
-    @apply absolute left-4 top-4 text-gray-400 text-base transition-all duration-300 pointer-events-none peer-focus:text-xs peer-focus:top-2 peer-focus:text-teal peer-valid:text-xs peer-valid:top-2;
+    @apply absolute left-4 top-4 text-gray-500 transition-all duration-300 pointer-events-none origin-[0];
+  }
+
+  .floating-label-input input:focus ~ label,
+  .floating-label-input input:not(:placeholder-shown) ~ label {
+    @apply transform -translate-y-2 scale-75 text-teal;
   }
 
   .morphing-shape {
