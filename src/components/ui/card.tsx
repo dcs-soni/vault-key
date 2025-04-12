@@ -16,19 +16,19 @@ const Card = React.forwardRef<
   }
 >(({ className, variant = "default", ...props }, ref) => {
   const variantClasses = {
-    default: "bg-card text-card-foreground shadow-sm border rounded-xl",
+    default: "bg-card pt-6 text-card-foreground shadow-sm border rounded-xl",
     glass:
-      "bg-white/70 dark:bg-navy/70 backdrop-blur-xl border border-white/40 dark:border-navy-300/20 text-card-foreground shadow-lg rounded-xl",
+      "bg-white/70 pt-6 dark:bg-navy/70 backdrop-blur-xl border border-white/40 dark:border-navy-300/20 text-card-foreground shadow-lg rounded-xl",
     premium:
-      "relative bg-card text-card-foreground shadow-premium border rounded-xl overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-teal dark:before:bg-gradient-teal before:opacity-10 hover:before:opacity-20 before:transition-opacity",
+      "relative pt-6 bg-card text-card-foreground shadow-premium border rounded-xl overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-teal dark:before:bg-gradient-teal before:opacity-10 hover:before:opacity-20 before:transition-opacity",
     neumorphic:
-      "bg-white dark:bg-navy text-card-foreground shadow-neumorphic-light dark:shadow-neumorphic-dark rounded-xl border-transparent",
+      "bg-white pt-6 dark:bg-navy text-card-foreground shadow-neumorphic-light dark:shadow-neumorphic-dark rounded-xl border-transparent",
     gradient:
-      "relative p-[1px] rounded-xl bg-gradient-to-br from-teal to-gold [&>div]:bg-card [&>div]:text-card-foreground [&>div]:rounded-xl [&>div]:h-full [&>div]:w-full",
+      "relative pt-6 p-[1px] rounded-xl bg-gradient-to-br from-teal to-gold [&>div]:bg-card [&>div]:text-card-foreground [&>div]:rounded-xl [&>div]:h-full [&>div]:w-full",
     hover:
-      "relative bg-card text-card-foreground shadow-sm border rounded-xl overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-teal-glow",
+      "relative pt-6 bg-card text-card-foreground shadow-sm border rounded-xl overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-teal-glow",
     parallax:
-      "relative bg-card text-card-foreground shadow-sm border rounded-xl overflow-hidden transform perspective-1000",
+      "relative pt-6 bg-card text-card-foreground shadow-sm border rounded-xl overflow-hidden transform perspective-1000",
   };
 
   return (
