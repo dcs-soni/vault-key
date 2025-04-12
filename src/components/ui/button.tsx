@@ -25,9 +25,9 @@ const buttonVariants = cva(
         premium:
           "relative bg-gradient-to-r from-teal to-gold text-white shadow-md hover:shadow-gold-glow after:absolute after:inset-0 after:bg-white/20 after:opacity-0 hover:after:opacity-100 after:transition-opacity overflow-hidden hover:scale-105 transition-transform duration-300",
         glass:
-          "bg-white/20 dark:bg-navy/20 backdrop-blur-md border border-white/30 dark:border-navy-300/20 text-navy dark:text-white shadow-sm hover:bg-white/30 dark:hover:bg-navy/30 hover:shadow-teal-glow transition-all duration-300",
+          "bg-white/20 dark:bg-navy/20 backdrop-blur-md border border-navy-300/70 dark:border-navy-300/70 text-navy dark:text-white shadow-sm hover:bg-white/30 dark:hover:bg-navy/30 hover:shadow-teal-glow transition-all duration-300",
         neumorphic:
-          "bg-white dark:bg-navy text-navy dark:text-white shadow-neumorphic-light dark:shadow-neumorphic-dark hover:shadow-none transition-all duration-300",
+          "bg-white dark:bg-navy text-navy dark:text-white shadow-neumorphic-light dark:shadow-neumorphic-dark hover:bg-teal/90 transition-all duration-300",
         navy: "bg-navy text-white hover:bg-navy-800 transition-colors duration-300 shadow-sm hover:shadow",
         teal: "bg-teal text-navy hover:bg-teal-600 transition-colors duration-300 shadow-sm hover:shadow-teal-glow",
         gold: "bg-gold text-navy hover:bg-gold-600 transition-colors duration-300 shadow-sm hover:shadow-gold-glow",
