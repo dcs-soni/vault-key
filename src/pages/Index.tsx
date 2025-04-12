@@ -35,6 +35,10 @@ export default function Index() {
 
   const heroControls = useAnimation();
 
+  const handleNavigation = (isSignUp: boolean) => {
+    navigate("/login", { state: { isSignUp } });
+  };
+
   const handleGetStarted = () => {
     navigate("/auth");
   };
@@ -348,7 +352,7 @@ export default function Index() {
             <div className="parallax-container">
               <Card
                 variant="premium"
-                className="h-full relative overflow-hidden">
+                className="h-full relative overflow-hidden py-10 px-4">
                 <CardHeader>
                   <CardTitle className="text-2xl mb-6">
                     Encryption at your fingertips
@@ -424,7 +428,7 @@ export default function Index() {
 
             <div>
               <Card variant="gradient" className="h-full">
-                <div>
+                <div className="pt-6">
                   <CardHeader>
                     <CardTitle className="text-2xl mb-6">
                       Easy to use, hard to crack
