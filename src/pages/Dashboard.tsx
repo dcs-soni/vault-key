@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,7 +7,6 @@ import {
   Filter,
   Grid3X3,
   ListFilter,
-  FolderOpen,
   ShieldCheck,
   Key,
   X,
@@ -45,84 +44,119 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db, Password } from "@/db/db";
+import { MasterPasswordSetup } from "../components/MasterPasswordSetup";
+import { MasterPasswordVerification } from "../components/MasterPasswordVerification";
+import { masterPasswordService } from "../services/masterPasswordService";
 
-// Sample data
-const samplePasswords = [
-  {
-    id: "1",
-    title: "Google",
-    username: "user@example.com",
-    password: "StrongPassword123!",
-    url: "https://google.com",
-    lastUpdated: "2 days ago",
-    category: "Work",
-  },
-  {
-    id: "2",
-    title: "Twitter",
-    username: "twitteruser",
-    password: "TweetSecure456@",
-    url: "https://twitter.com",
-    lastUpdated: "1 week ago",
-    category: "Social",
-  },
-  {
-    id: "3",
-    title: "Amazon",
-    username: "amazonuser",
-    password: "ShopS3cure789#",
-    url: "https://amazon.com",
-    lastUpdated: "3 days ago",
-    category: "Shopping",
-  },
-  {
-    id: "4",
-    title: "Netflix",
-    username: "netflixuser",
-    password: "WatchMovies321$",
-    url: "https://netflix.com",
-    lastUpdated: "1 month ago",
-    category: "Entertainment",
-  },
-  {
-    id: "5",
-    title: "GitHub",
-    username: "devuser",
-    password: "CodeSecret567&",
-    url: "https://github.com",
-    lastUpdated: "5 days ago",
-    category: "Development",
-  },
-  {
-    id: "6",
-    title: "Microsoft",
-    username: "msuser@outlook.com",
-    password: "MicroPass876%",
-    url: "https://microsoft.com",
-    lastUpdated: "2 weeks ago",
-    category: "Work",
-  },
-];
-
-const Dashboard = () => {
+export default function Dashboard() {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
 
-  const [passwords, setPasswords] = useState(samplePasswords.slice(0, 3)); // Start with only 3 passwords
+  // Use Dexie's live query to get passwords
+  const passwords = useLiveQuery(() => db.passwords.toArray()) || [];
+
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
-  const [newPassword, setNewPassword] = useState({
+  const [editingPasswordId, setEditingPasswordId] = useState<number | null>(null);
+  const [newPassword, setNewPassword] = useState<Omit<Password, "id">>({
     title: "",
     username: "",
     password: "",
     url: "",
     category: "Uncategorized",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState<boolean | null>(null);
+  const [isMasterPasswordVerified, setIsMasterPasswordVerified] = useState(false);
+
+  const initializeData = async () => {
+    try {
+      // Ensure database is initialized
+      await db.initialize();
+      
+      const count = await db.passwords.count();
+      if (count === 0) {
+        const samplePassword = {
+          title: "Google",
+          username: "user@example.com",
+          password: "StrongPassword123!",
+          url: "https://google.com",
+          category: "Work",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        await db.passwords.add(samplePassword);
+      }
+      return true;
+    } catch (error) {
+      console.error("Error initializing data:", error);
+      toast.error("Failed to initialize dashboard data");
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    const checkMasterPasswordStatus = async () => {
+      try {
+        setIsLoading(true);
+        const hasMasterPassword = await masterPasswordService.hasMasterPassword();
+        setIsNewUser(!hasMasterPassword);
+        
+        const isVerified = localStorage.getItem("masterPasswordVerified") === "true";
+        if (isVerified) {
+          const initialized = await initializeData();
+          if (initialized) {
+            setIsMasterPasswordVerified(true);
+          } else {
+            localStorage.removeItem("masterPasswordVerified");
+            setIsMasterPasswordVerified(false);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking master password status:", error);
+        toast.error("Error loading dashboard");
+        localStorage.removeItem("masterPasswordVerified");
+        setIsMasterPasswordVerified(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      checkMasterPasswordStatus();
+    }
+  }, [isAuthenticated]);
+
+  const handleMasterPasswordSuccess = async () => {
+    try {
+      setIsLoading(true);
+      const initialized = await initializeData();
+      if (initialized) {
+        setIsMasterPasswordVerified(true);
+        localStorage.setItem("masterPasswordVerified", "true");
+        toast.success("Successfully accessed dashboard");
+      } else {
+        throw new Error("Failed to initialize dashboard");
+      }
+    } catch (error) {
+      console.error("Error initializing dashboard:", error);
+      toast.error("Error accessing dashboard");
+      setIsMasterPasswordVerified(false);
+      localStorage.removeItem("masterPasswordVerified");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -139,8 +173,10 @@ const Dashboard = () => {
               your passwords.
             </p>
             <Button
+              variant="teal"
+              size="xl"
               onClick={() => navigate("/auth")}
-              className="neo-button w-full py-6 text-base flex items-center justify-center gap-2">
+              className="w-full flex items-center justify-center gap-2">
               <LogIn className="h-5 w-5" />
               Sign In to Access Dashboard
             </Button>
@@ -158,6 +194,21 @@ const Dashboard = () => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!isMasterPasswordVerified) {
+    if (isNewUser) {
+      return <MasterPasswordSetup onSuccess={handleMasterPasswordSuccess} />;
+    }
+    return <MasterPasswordVerification onSuccess={handleMasterPasswordSuccess} />;
+  }
+
   const filteredPasswords = passwords.filter((password) => {
     const matchesSearch =
       password.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -171,53 +222,117 @@ const Dashboard = () => {
   });
 
   const categories = Array.from(
-    new Set(passwords.map((password) => password.category))
+    new Set(passwords.map((password) => password.category || "Uncategorized"))
   );
 
-  const handleEdit = (id: string) => {
-    toast.info(`Editing password ID: ${id}`);
+  const handleEdit = async (id: string) => {
+    const numericId = parseInt(id);
+    if (isNaN(numericId)) return;
+
+    try {
+      const password = await db.passwords.get(numericId);
+      if (password) {
+        setNewPassword({
+          title: password.title,
+          username: password.username,
+          password: password.password,
+          url: password.url || "",
+          category: password.category,
+          createdAt: password.createdAt,
+          updatedAt: password.updatedAt,
+        });
+        setEditingPasswordId(numericId);
+        setShowEditDialog(true);
+      }
+    } catch (error) {
+      toast.error("Failed to retrieve password");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setPasswords(passwords.filter((password) => password.id !== id));
-    toast.success("Password deleted successfully");
-  };
+  const handleEditSave = async () => {
+    if (!editingPasswordId) return;
 
-  const handleAddPassword = () => {
     if (!newPassword.title || !newPassword.username || !newPassword.password) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    if (passwords.length >= 3 && !isPremium) {
+    try {
+      await db.passwords.update(editingPasswordId, {
+        ...newPassword,
+        updatedAt: new Date(),
+      });
+
+      setShowEditDialog(false);
+      setEditingPasswordId(null);
+      setNewPassword({
+        title: "",
+        username: "",
+        password: "",
+        url: "",
+        category: "Uncategorized",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      toast.success("Password updated successfully");
+    } catch (error) {
+      toast.error("Failed to update password");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const numericId = parseInt(id);
+    if (isNaN(numericId)) return;
+
+    try {
+      await db.passwords.delete(numericId);
+      toast.success("Password deleted successfully");
+    } catch (error) {
+      toast.error("Failed to delete password");
+    }
+  };
+
+  const handleAddPassword = async () => {
+    if (!newPassword.title || !newPassword.username || !newPassword.password) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // Check if adding this password would exceed the limit
+    if (passwords.length >= 3) {
       setShowAddDialog(false);
       setShowUpgradeDialog(true);
       return;
     }
 
-    const newId = (
-      Math.max(...passwords.map((p) => parseInt(p.id))) + 1
-    ).toString();
-
-    setPasswords([
-      ...passwords,
-      {
-        id: newId,
+    try {
+      await db.passwords.add({
         ...newPassword,
-        lastUpdated: "Just now",
-      },
-    ]);
+        updatedAt: new Date(),
+      });
 
-    setNewPassword({
-      title: "",
-      username: "",
-      password: "",
-      url: "",
-      category: "Uncategorized",
-    });
+      setNewPassword({
+        title: "",
+        username: "",
+        password: "",
+        url: "",
+        category: "Uncategorized",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
-    setShowAddDialog(false);
-    toast.success("Password added successfully");
+      setShowAddDialog(false);
+      toast.success("Password added successfully");
+
+      // Show upgrade dialog if we've reached the limit
+      if (passwords.length === 2) {
+        setTimeout(() => {
+          setShowUpgradeDialog(true);
+        }, 500);
+      }
+    } catch (error) {
+      toast.error("Failed to add password");
+    }
   };
 
   const handleUpgradeClick = () => {
@@ -238,6 +353,10 @@ const Dashboard = () => {
     if (newPassword.title || newPassword.username || newPassword.password) {
       setShowAddDialog(true);
     }
+  };
+
+  const handleCategorySelect = (category: string | null) => {
+    setSelectedCategory(category);
   };
 
   return (
@@ -261,11 +380,17 @@ const Dashboard = () => {
                   variant="outline"
                   className="rounded-lg shadow-sm border-gradient-to-r from-amber-400 to-amber-600 text-amber-700 dark:text-amber-400">
                   <CreditCard size={16} className="mr-2 text-amber-500" />
-                  Upgrade ({3 - passwords.length} slots left)
+                  Upgrade ({Math.max(0, 3 - passwords.length)} slots left)
                 </Button>
               )}
               <Button
-                onClick={() => setShowAddDialog(true)}
+                onClick={() => {
+                  if (passwords.length >= 3 && !isPremium) {
+                    setShowUpgradeDialog(true);
+                  } else {
+                    setShowAddDialog(true);
+                  }
+                }}
                 className="rounded-lg shadow-sm">
                 <Plus size={16} className="mr-2" />
                 Add Password
@@ -309,40 +434,20 @@ const Dashboard = () => {
               <div className="flex gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="neumorphic" className="gap-2">
-                      <Filter size={16} />
-                      <span>Filter</span>
+                    <Button variant="outline" size="icon">
+                      <Filter className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() => setSelectedCategory(null)}
-                      className={`${
-                        !selectedCategory
-                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                          : ""
-                      }`}>
-                      <FolderOpen size={16} className="mr-2" />
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setSelectedCategory(null)}>
                       All Categories
-                      {!selectedCategory && (
-                        <CheckCircle2 size={16} className="ml-2" />
-                      )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     {categories.map((category) => (
                       <DropdownMenuItem
                         key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`${
-                          selectedCategory === category
-                            ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                            : ""
-                        }`}>
-                        <FolderOpen size={16} className="mr-2" />
+                        onClick={() => setSelectedCategory(category)}>
                         {category}
-                        {selectedCategory === category && (
-                          <CheckCircle2 size={16} className="ml-2" />
-                        )}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -398,7 +503,13 @@ const Dashboard = () => {
               {filteredPasswords.map((password) => (
                 <PasswordCard
                   key={password.id}
-                  {...password}
+                  id={String(password.id)}
+                  title={password.title}
+                  username={password.username}
+                  password={password.password}
+                  url={password.url}
+                  category={password.category || "Uncategorized"}
+                  updatedAt={password.updatedAt}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                 />
@@ -413,7 +524,7 @@ const Dashboard = () => {
                   </div>
                   <h3 className="font-medium mb-1">Add Password</h3>
                   <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-                    {3 - passwords.length} free slots available
+                    {Math.max(0, 3 - passwords.length)} free slots available
                   </p>
                 </div>
               )}
@@ -513,6 +624,116 @@ const Dashboard = () => {
             <Button onClick={handleAddPassword}>
               <Key size={16} className="mr-2" />
               Save Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Password Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Password</DialogTitle>
+            <DialogDescription>
+              Update your stored password information
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="edit-title" className="text-sm font-medium">
+                Title
+              </label>
+              <Input
+                id="edit-title"
+                value={newPassword.title}
+                onChange={(e) =>
+                  setNewPassword({ ...newPassword, title: e.target.value })
+                }
+                placeholder="e.g. Google, Twitter, Bank"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="edit-username" className="text-sm font-medium">
+                Username
+              </label>
+              <Input
+                id="edit-username"
+                value={newPassword.username}
+                onChange={(e) =>
+                  setNewPassword({ ...newPassword, username: e.target.value })
+                }
+                placeholder="e.g. your.email@example.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="edit-password" className="text-sm font-medium">
+                Password
+              </label>
+              <Input
+                id="edit-password"
+                type="password"
+                value={newPassword.password}
+                onChange={(e) =>
+                  setNewPassword({ ...newPassword, password: e.target.value })
+                }
+                placeholder="Enter password"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="edit-url" className="text-sm font-medium">
+                Website URL (optional)
+              </label>
+              <Input
+                id="edit-url"
+                value={newPassword.url}
+                onChange={(e) =>
+                  setNewPassword({ ...newPassword, url: e.target.value })
+                }
+                placeholder="e.g. https://example.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="edit-category" className="text-sm font-medium">
+                Category
+              </label>
+              <Input
+                id="edit-category"
+                value={newPassword.category}
+                onChange={(e) =>
+                  setNewPassword({ ...newPassword, category: e.target.value })
+                }
+                placeholder="e.g. Work, Personal, Finance"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex space-x-2 sm:space-x-0">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowEditDialog(false);
+                setEditingPasswordId(null);
+                setNewPassword({
+                  title: "",
+                  username: "",
+                  password: "",
+                  url: "",
+                  category: "Uncategorized",
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                });
+              }}>
+              <X size={16} className="mr-2" />
+              Cancel
+            </Button>
+            <Button onClick={handleEditSave}>
+              <Key size={16} className="mr-2" />
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -637,5 +858,3 @@ const Dashboard = () => {
     </div>
   );
 };
-
-export default Dashboard;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../services/authService";
+import { masterPasswordService } from "../services/masterPasswordService";
 
 export function MagicLinkVerification() {
   const navigate = useNavigate();
@@ -19,19 +20,52 @@ export function MagicLinkVerification() {
           return;
         }
 
+        // Add a minimum delay to show the verifying state
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Attempt verification
         const response = await authService.verifyMagicLink();
 
         if (response.success) {
           setVerificationStatus("success");
-          // Wait a moment before redirecting to show success message
-          setTimeout(() => {
+
+          // Add a small delay before checking master password and redirecting
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          try {
+            // Check if user has a master password
+            const hasMasterPassword =
+              await masterPasswordService.hasMasterPassword();
+
+            // Set the authentication status
+            localStorage.setItem("isAuthenticated", "true");
+
+            // Clear any existing master password verification
+            localStorage.removeItem("masterPasswordVerified");
+
             navigate("/dashboard");
-          }, 1000);
+          } catch (err) {
+            console.error("Error checking master password:", err);
+
+            localStorage.setItem("isAuthenticated", "true");
+            navigate("/dashboard");
+          }
         } else {
           setVerificationStatus("error");
           setError(response.error || "Verification failed");
         }
       } catch (err) {
+        console.error("Verification error:", err);
+
+        // Check if we're actually authenticated despite the error
+        const isLoggedIn = await authService.isLoggedIn();
+        if (isLoggedIn) {
+          setVerificationStatus("success");
+          localStorage.setItem("isAuthenticated", "true");
+          navigate("/dashboard");
+          return;
+        }
+
         setVerificationStatus("error");
         setError("An error occurred during verification");
       }
@@ -92,7 +126,7 @@ export function MagicLinkVerification() {
               </div>
               <h2 className="text-h3 mb-2">Email Verified!</h2>
               <p className="text-muted-foreground">
-                Redirecting you to the dashboard...
+                Redirecting you to secure your vault...
               </p>
             </div>
           )}
