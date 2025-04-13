@@ -11,7 +11,7 @@ interface PasswordCardProps {
   username: string;
   password: string;
   url?: string;
-  lastUpdated: string;
+  updatedAt: Date;
   category?: string;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -23,13 +23,26 @@ const PasswordCard: React.FC<PasswordCardProps> = ({
   username,
   password,
   url,
-  lastUpdated,
+  updatedAt,
   category = "Uncategorized",
   onEdit,
   onDelete,
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  const formatDate = (date: Date) => {
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return `${Math.floor(diffDays / 365)} years ago`;
+  };
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -101,7 +114,7 @@ const PasswordCard: React.FC<PasswordCardProps> = ({
               {category}
             </span>
             <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
-            <span className="text-xs truncate">{lastUpdated}</span>
+            <span className="text-xs truncate">{formatDate(updatedAt)}</span>
           </div>
         </div>
       </div>
