@@ -99,7 +99,7 @@
 }
 
 .futuristic-card:hover {
-  transform: translateY(-5px);
+      transform: translateY(-5px);
   box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.25);
 }
 
@@ -121,11 +121,11 @@
 
 /* Animation Keyframes */
 @keyframes float-subtle {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
     transform: translateY(-8px);
   }
 }
