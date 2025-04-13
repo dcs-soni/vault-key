@@ -2,6 +2,7 @@ import Dexie, { Table } from 'dexie';
 
 export interface Password {
   id?: number;
+  userId: string;
   title: string;
   username: string;
   password: string;
@@ -32,8 +33,8 @@ export class VaultKeyDB extends Dexie {
 
   constructor() {
     super('vaultKeyDB');
-    this.version(3).stores({
-      passwords: '++id, title, username, category, createdAt, updatedAt',
+    this.version(4).stores({
+      passwords: '++id, userId, title, username, category, createdAt, updatedAt',
       userSettings: '++id, email, masterPasswordHash, hasMasterPassword',
       masterPassword: '++id, hashedPassword, salt'
     });

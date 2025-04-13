@@ -53,9 +53,13 @@ import { masterPasswordService } from "../services/masterPasswordService";
 export default function Dashboard() {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
+  const userEmail = localStorage.getItem("userEmail") || "";  // Get user email
 
-  // Use Dexie's live query to get passwords
-  const passwords = useLiveQuery(() => db.passwords.toArray()) || [];
+  // Use Dexie's live query to get only the current user's passwords
+  const passwords = useLiveQuery(
+    () => db.passwords.where('userId').equals(userEmail).toArray(),
+    [userEmail]
+  ) || [];
 
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -67,6 +71,7 @@ export default function Dashboard() {
   const [isPremium, setIsPremium] = useState(false);
   const [editingPasswordId, setEditingPasswordId] = useState<number | null>(null);
   const [newPassword, setNewPassword] = useState<Omit<Password, "id">>({
+    userId: userEmail,
     title: "",
     username: "",
     password: "",
@@ -84,9 +89,10 @@ export default function Dashboard() {
       // Ensure database is initialized
       await db.initialize();
       
-      const count = await db.passwords.count();
+      const count = await db.passwords.where('userId').equals(userEmail).count();
       if (count === 0) {
         const samplePassword = {
+          userId: userEmail,  // Add userId
           title: "Google",
           username: "user@example.com",
           password: "StrongPassword123!",
@@ -233,6 +239,7 @@ export default function Dashboard() {
       const password = await db.passwords.get(numericId);
       if (password) {
         setNewPassword({
+          userId: userEmail,
           title: password.title,
           username: password.username,
           password: password.password,
@@ -258,14 +265,23 @@ export default function Dashboard() {
     }
 
     try {
+      // First verify this password belongs to the current user
+      const existingPassword = await db.passwords.get(editingPasswordId);
+      if (!existingPassword || existingPassword.userId !== userEmail) {
+        toast.error("You don't have permission to edit this password");
+        return;
+      }
+
       await db.passwords.update(editingPasswordId, {
         ...newPassword,
+        userId: userEmail,  // Ensure userId is preserved
         updatedAt: new Date(),
       });
 
       setShowEditDialog(false);
       setEditingPasswordId(null);
       setNewPassword({
+        userId: userEmail,
         title: "",
         username: "",
         password: "",
@@ -285,6 +301,13 @@ export default function Dashboard() {
     if (isNaN(numericId)) return;
 
     try {
+      // First verify this password belongs to the current user
+      const existingPassword = await db.passwords.get(numericId);
+      if (!existingPassword || existingPassword.userId !== userEmail) {
+        toast.error("You don't have permission to delete this password");
+        return;
+      }
+
       await db.passwords.delete(numericId);
       toast.success("Password deleted successfully");
     } catch (error) {
@@ -308,10 +331,12 @@ export default function Dashboard() {
     try {
       await db.passwords.add({
         ...newPassword,
+        userId: userEmail,  // Add userId
         updatedAt: new Date(),
       });
 
       setNewPassword({
+        userId: userEmail,
         title: "",
         username: "",
         password: "",
@@ -719,6 +744,7 @@ export default function Dashboard() {
                 setShowEditDialog(false);
                 setEditingPasswordId(null);
                 setNewPassword({
+                  userId: userEmail,
                   title: "",
                   username: "",
                   password: "",

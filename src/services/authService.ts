@@ -38,9 +38,14 @@ export const authService = {
       }
 
       // Double check the login status
-      const isLoggedIn = await magic.user.isLoggedIn();
+      const isLoggedIn = await this.isLoggedIn();
 
       if (isLoggedIn) {
+        // Get user info including email
+        const userInfo = await this.getUserMetadata();
+        if (userInfo?.email) {
+          localStorage.setItem("userEmail", userInfo.email);
+        }
         localStorage.setItem("isAuthenticated", "true");
         return { success: true };
       }
@@ -48,8 +53,13 @@ export const authService = {
       // If not logged in, try one more time
       try {
         await magic.auth.loginWithCredential();
-        const retryLogin = await magic.user.isLoggedIn();
+        const retryLogin = await this.isLoggedIn();
         if (retryLogin) {
+          // Get user info including email after retry
+          const userInfo = await this.getUserMetadata();
+          if (userInfo?.email) {
+            localStorage.setItem("userEmail", userInfo.email);
+          }
           localStorage.setItem("isAuthenticated", "true");
           return { success: true };
         }
@@ -74,6 +84,7 @@ export const authService = {
       await magic.user.logout();
       localStorage.removeItem("isAuthenticated");
       localStorage.removeItem("hasMasterPassword");
+      localStorage.removeItem("masterPasswordVerified");
       localStorage.removeItem("userEmail");
     } catch (error) {
       console.error("Error during logout:", error);
