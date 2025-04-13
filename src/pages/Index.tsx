@@ -21,6 +21,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAnimation } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { motion } from 'framer-motion';
 
 export default function Index() {
   const [_mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -90,6 +91,18 @@ export default function Index() {
     };
   }, [heroControls]);
 
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.7,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-navy overflow-hidden">
       <Header />
@@ -127,7 +140,7 @@ export default function Index() {
         className="pt-32 pb-20 px-4 md:pt-40 md:pb-32 relative">
         <div className="particles-container">
           {[...Array(20)].map((_, i) => (
-            <div
+            <motion.div
               key={i}
               className="absolute rounded-full bg-teal/10 dark:bg-teal/5"
               style={{
@@ -135,6 +148,15 @@ export default function Index() {
                 height: Math.random() * 6 + 2,
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.8, 0.3],
+              }}
+              transition={{
+                duration: Math.random() * 3 + 2,
+                repeat: Infinity,
+                delay: Math.random() * 5,
               }}
             />
           ))}
@@ -146,24 +168,31 @@ export default function Index() {
           <div className="absolute top-40 -right-20 w-80 h-80 rounded-full border border-teal/5 opacity-20" />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div className="text-left">
+            <motion.div className="text-left" initial="hidden"
+              animate="visible"
+              variants={fadeInUp}>
               <div className="mb-8 inline-flex items-center px-3 py-1 space-x-1 border border-teal/10 rounded-full text-xs font-medium text-teal">
                 <KeyRound className="w-3.5 h-3.5 mr-1.5" />
                 <span>Zero-Knowledge Encryption</span>
               </div>
 
               <div className="text-reveal-container">
-                <h1 className="font-poppins text-h1 font-bold text-navy dark:text-white mb-6">
-                  Security with <span className="text-teal">Simplicity</span>
-                </h1>
+                <motion.h1 className="font-poppins text-h1 font-bold text-navy dark:text-white mb-6" initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.2 }}>
+                  Your Passwords, <span className="text-teal">Your Control</span>
+                </motion.h1>
               </div>
 
-              <p className="text-body text-gray-600 dark:text-gray-300 mb-8 max-w-md">
-                Protect what matters with elegant encryption that keeps your
-                data exclusively yours. No surveillance, no backdoors.
-              </p>
+              <motion.p className="text-body text-gray-600 dark:text-gray-300 mb-8 max-w-md" initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.4 }}>
+                VaultKey combines military-grade encryption with intuitive design. Manage your passwords with confidence, knowing your data never leaves your device unprotected.
+              </motion.p>
 
-              <div className="flex items-center space-x-4">
+              <motion.div className="flex items-center space-x-4" initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.6 }}>
                 <Button
                   onClick={handleGetStarted}
                   className="rounded-xl px-6 py-6 text-white shadow-md text-sm">
@@ -177,13 +206,17 @@ export default function Index() {
                   <span>Try password generator</span>
                   <ArrowRight className="ml-1 h-3 w-3 transform group-hover:translate-x-1 transition-transform" />
                 </a>
-              </div>
+              </motion.div>
 
-              <div className="mt-16 grid grid-cols-3 gap-6">
+              <motion.div className="mt-16 grid grid-cols-3 gap-6" initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.7, delay: 0.8 }}>
                 {[
-                  { label: "End-to-End", value: "Encryption" },
-                  { label: "Zero", value: "Knowledge" },
-                  { label: "AES-256", value: "Standard" },
+                  { label: "Security", value: "Client-Side" },
+
+                  { label: "Encryption", value: "AES-256" },
+                  { label: "Architecture", value: "Zero-Knowledge" },
+
                 ].map((stat, i) => (
                   <div key={i} className="flex flex-col">
                     <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
@@ -194,10 +227,12 @@ export default function Index() {
                     </span>
                   </div>
                 ))}
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
-            <div className="relative">
+            <motion.div className="relative" initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}>
               <div className="aspect-square max-w-md mx-auto relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="relative w-full h-full">
@@ -209,36 +244,71 @@ export default function Index() {
 
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                       <div className="relative">
-                        <div className="w-24 h-24 rounded-full bg-gradient-teal flex items-center justify-center shadow-teal-glow">
+                        <motion.div className="w-24 h-24 rounded-full bg-gradient-teal flex items-center justify-center shadow-teal-glow" animate={{ 
+                            boxShadow: ['0 0 20px 0px rgba(45, 212, 191, 0.3)', '0 0 20px 5px rgba(45, 212, 191, 0.5)', '0 0 20px 0px rgba(45, 212, 191, 0.3)'],
+                          }}
+                          transition={{ 
+                            duration: 2, 
+                            repeat: Infinity, 
+                            ease: "easeInOut" 
+                          }}>
                           <Lock className="w-8 h-8 text-white" />
-                        </div>
+                        </motion.div>
 
-                        <div className="absolute -top-6 -right-12 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center">
+                        <motion.div className="absolute -top-6 -right-12 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center" animate={{ y: [0, -10, 0] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            duration: 4,
+                            ease: "easeInOut"
+                          }}>
                           <ShieldCheck className="w-4 h-4 text-teal" />
-                        </div>
+                        </motion.div>
 
-                        <div className="absolute -bottom-4 -left-10 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center">
+                        <motion.div className="absolute -bottom-4 -left-10 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center"  animate={{ y: [0, 10, 0] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            duration: 5, 
+                            ease: "easeInOut"
+                          }}>
                           <Eye className="w-4 h-4 text-gold" />
-                        </div>
+                        </motion.div>
 
-                        <div className="absolute top-16 right-0 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center">
+                        <motion.div className="absolute top-16 right-0 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center" animate={{ y: [0, 8, 0] }}
+                          transition={{ 
+                            repeat: Infinity, 
+                            duration: 6,
+                            ease: "easeInOut",
+                            delay: 1
+                          }}>
                           <LockKeyhole className="w-4 h-4 text-navy dark:text-white" />
-                        </div>
-                        <div className="absolute top-26 -right-20 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center">
+                        </motion.div>
+                        <motion.div className="absolute top-26 -right-20 w-8 h-8 rounded-lg bg-white dark:bg-navy-800 shadow-md flex items-center justify-center" transition={{ 
+                            repeat: Infinity, 
+                            duration: 7,
+                            ease: "easeInOut",
+                            delay: 1
+                          }}>
                           <KeySquare className="w-4 h-4 text-orange-500" />
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      <div className="fancy-divider">
-        <div className="fancy-divider-inner" />
+      {/* Fancy Divider */}
+      <div className="w-full overflow-hidden relative h-28">
+        <svg className="w-full absolute top-0" viewBox="0 0 1440 100" preserveAspectRatio="none">
+          <path 
+            d="M0,30 C240,120 720,-10 1440,40 L1440,100 L0,100 Z" 
+            fill="#2dd4bf" 
+            fillOpacity="0.4" 
+          />
+        </svg>
       </div>
 
       {/* Core Principles Section */}
@@ -249,7 +319,10 @@ export default function Index() {
         <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] rounded-full bg-linear-to-br from-gold/5 to-gold/2 opacity-30 blur-xl"></div>
 
         <div className="container mx-auto max-w-6xl relative z-10">
-          <div className="mb-16 inline-flex items-start flex-col">
+          <motion.div className="mb-16 inline-flex w-full  items-center flex-col" initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}>
             <div className="inline-flex items-center px-3 py-1 space-x-1 border border-teal/10 rounded-full text-xs font-medium text-teal mb-4">
               <Sparkles className="w-3.5 h-3.5 mr-1.5" />
               <span>Core Principles</span>
@@ -261,45 +334,48 @@ export default function Index() {
             <p className="text-gray-600 dark:text-gray-300 text-body">
               Your credentials remain exclusively yours
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}>
             {[
               {
-                icon: Sparkles,
-                title: "lorem ipsum",
+                icon: Shield,
+                title: "Zero-Knowledge Security",
                 description:
-                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+                  "Your data is encrypted with AES-256 before leaving your device. We never see your passwords - only you have the key.",
+              },
+              {
+                icon: KeyRound,
+                title: "Master Password Protection",
+                description:
+                  "One master password unlocks your vault. With client-side encryption and secure hashing, your master key never leaves your device.",
+              },
+              {
+                icon: Eye,
+                title: "Password Generator",
+                description:
+                  "Create strong, unique passwords with our advanced generator. Customize length, include special characters, and track password history.",
+              },
+              {
+                icon: LockKeyhole,
+                title: "Smart Organization",
+                description:
+                  "Categorize passwords, add notes, and quickly find what you need with powerful search and filtering options.",
+              },
+              {
+                icon: ShieldCheck,
+                title: "Security First",
+                description:
+                  "Auto-logout, password strength assessment, and secure password verification ensure your data stays protected.",
               },
               {
                 icon: Sparkles,
-                title: "lorem ipsum",
+                title: "Modern Experience",
                 description:
-                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
-              },
-              {
-                icon: Sparkles,
-                title: "lorem ipsum",
-                description:
-                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
-              },
-              {
-                icon: Sparkles,
-                title: "lorem ipsum",
-                description:
-                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
-              },
-              {
-                icon: Sparkles,
-                title: "lorem ipsum",
-                description:
-                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
-              },
-              {
-                icon: Sparkles,
-                title: "lorem ipsum",
-                description:
-                  "Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit, nihil!",
+                  "Clean interface with dark mode, quick copy features, and website favicon integration for a seamless password management experience.",
               },
             ].map((feature, index) => (
               <div key={index}>
@@ -323,7 +399,7 @@ export default function Index() {
                 </Card>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -334,7 +410,10 @@ export default function Index() {
         <div className="absolute inset-0 bg-gradient-mesh opacity-20 -z-10"></div>
 
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center inline-flex items-start flex-col mb-16">
+          <motion.div className="text-center inline-flex w-full items-center flex-col mb-16" initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}>
             <div className="inline-flex items-center px-3 py-1 space-x-1 border border-teal/10 rounded-full text-xs font-medium text-teal mb-4">
               <Shield className="w-3.5 h-3.5 mr-1.5" />
               <span>How It Works</span>
@@ -346,10 +425,13 @@ export default function Index() {
             <span className="text-gray-600 dark:text-gray-300 text-body">
               Secure underneath
             </span>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
-            <div className="parallax-container">
+            <motion.div className="parallax-container" initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}>
               <Card
                 variant="premium"
                 className="h-full relative overflow-hidden py-10 px-4">
@@ -360,17 +442,14 @@ export default function Index() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    We use AES-256, the same encryption standard used by
-                    governments and financial institutions worldwide. Your
-                    master password creates a unique key that only exists on
-                    your device.
+                    Your vault is secured with AES-256 encryption, the gold standard in data protection. Your master password creates a unique encryption key that never leaves your device, ensuring only you can access your data.
                   </p>
                   <ul className="space-y-3">
                     {[
-                      "Password vault never leaves your device unencrypted",
-                      "Automatic sync with end-to-end encryption",
-                      "No password recovery - you maintain 100% control",
-                      "Open source cryptography you can verify",
+                      "Zero-knowledge architecture - we can't access your data",
+                      "Client-side encryption with secure key derivation",
+                      "Automatic secure logout for protection",
+                      "Password strength monitoring and alerts",
                     ].map((item, i) => (
                       <CardParallax
                         key={i}
@@ -387,75 +466,122 @@ export default function Index() {
                   </ul>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
 
-            <div className="flex items-center justify-center">
+            <motion.div className="flex items-center justify-center" initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.2 }}>
               <div className="relative w-full max-w-md aspect-square">
                 <div className="absolute w-full h-full rounded-full bg-linear-to-br from-teal/5 to-teal/2 animate-pulse-glow"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div>
+                  <motion.div animate={{ 
+                      rotate: [0, 360],
+                    }}
+                    transition={{ 
+                      duration: 120,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}>
                     <svg
                       className="w-3/4 h-3/4 text-teal/10"
                       viewBox="0 0 24 24"
                       fill="currentColor">
                       <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-15a3 3 0 00-3 3v2a3 3 0 006 0v-2a3 3 0 00-3-3zm1 13h-2v-2h2v2zm-2-4v-2.1A5 5 0 0117 9v-.5a5 5 0 10-10 0V9a5 5 0 016 4.9V16h-2z" />
                     </svg>
-                  </div>
-                  <div>
+                  </motion.div>
+                  <motion.div animate={{ 
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}>
                     <Lock className="absolute w-12 h-12 text-teal" />
-                  </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <div className="flex items-center justify-center order-last lg:order-first">
+            <motion.div className="flex items-center justify-center order-last lg:order-first" initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}>
               <div className="grid grid-cols-2 gap-6 w-full">
-                {[1, 2, 3, 4].map((item) => (
-                  <div key={item} className="glass-panel p-6 shadow-lg">
+                {[
+                  {
+                    step: 1,
+                    title: "Magic Link Sign In",
+                    description: "Secure passwordless authentication via email"
+                  },
+                  {
+                    step: 2,
+                    title: "Set Master Password",
+                    description: "Create one strong key to unlock your vault"
+                  },
+                  {
+                    step: 3,
+                    title: "Add Passwords",
+                    description: "Store and organize your credentials securely"
+                  },
+                  {
+                    step: 4,
+                    title: "Access Anywhere",
+                    description: "Quick, secure access to your passwords"
+                  }
+                ].map((item) => (
+                  <motion.div key={item.step} className="glass-panel p-6 shadow-lg" whileHover={{ y: -5, boxShadow: '0 0 20px 0px rgba(45, 212, 191, 0.3)' }}
+                  transition={{ duration: 0.3 }}>
                     <div className="w-10 h-10 rounded-full bg-gradient-teal opacity-10 flex items-center justify-center mb-4">
                       <span className="text-sm font-bold text-teal">
-                        {item}
+                        {item.step}
                       </span>
                     </div>
-                    <div className="h-2 w-3/4 bg-teal/10 dark:bg-teal/5 rounded-full mb-2"></div>
-                    <div className="h-2 w-1/2 bg-teal/10 dark:bg-teal/5 rounded-full"></div>
-                  </div>
+                    <h4 className="font-medium text-navy-800 dark:text-white text-sm mb-2">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {item.description}
+                    </p>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.2 }}>
               <Card variant="gradient" className="h-full">
                 <div className="pt-6">
                   <CardHeader>
                     <CardTitle className="text-2xl mb-6">
-                      Easy to use, hard to crack
+                      Security Made Simple
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                      Our intuitive interface makes password management simple
-                      while the underlying technology ensures uncompromising
-                      security.
+                      VaultKey combines advanced security with an intuitive workflow, making password management both secure and effortless.
                     </p>
                     <div className="space-y-6">
                       {[
                         {
-                          title: "Create Strong Passwords",
+                          title: "Local Encryption",
                           description:
-                            "Generate random passwords with our built-in tool",
+                            "All passwords are encrypted on your device before storage",
                         },
                         {
-                          title: "Auto-Fill Credentials",
+                          title: "Passwordless Auth",
                           description:
-                            "Save time with secure browser integration",
+                            "No need to remember another password for login",
                         },
                         {
-                          title: "Multi-Device Access",
+                          title: "Instant Access",
                           description:
-                            "Access your passwords anywhere with secure sync",
+                            "Quick copy, auto-fill, and secure password sharing",
                         },
                       ].map((item, i) => (
                         <div key={i} className="flex">
@@ -478,7 +604,7 @@ export default function Index() {
                   </CardContent>
                 </div>
               </Card>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -491,7 +617,10 @@ export default function Index() {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gold/5 blur-3xl"></div>
 
         <div className="container mx-auto max-w-5xl">
-          <div className="relative z-10 mb-16">
+          <motion.div className="relative z-10 mb-16" initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}>
             <Card variant="gradient" className="overflow-hidden">
               <div className="p-12 md:p-16">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
@@ -526,22 +655,26 @@ export default function Index() {
             <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  quote: "The most intuitive password manager I've ever used.",
+                  quote: "Finally found a password manager that puts security first without compromising on usability.",
                   name: "Alex M.",
-                  role: "Software Engineer",
+                  role: "Security Engineer",
                 },
                 {
-                  quote: "Security without sacrificing convenience.",
+                  quote: "The password generator and strength checker have helped me upgrade all my weak passwords.",
                   name: "Sarah L.",
-                  role: "Digital Marketer",
+                  role: "Business Owner",
                 },
                 {
-                  quote: "Finally, a password manager I can trust completely.",
+                  quote: "Clean interface, quick access to passwords, and knowing my data is encrypted gives me peace of mind.",
                   name: "Michael R.",
-                  role: "Security Analyst",
+                  role: "IT Professional",
                 },
               ].map((testimonial, i) => (
-                <div key={i} className="h-full">
+                <motion.div key={i} className="h-full" initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.2 }}
+                whileHover={{ y: -10, transition: { duration: 0.3 } }}>
                   <Card variant="glass" className="h-full">
                     <CardContent className="p-6 flex flex-col h-full">
                       <div className="flex-1">
@@ -559,7 +692,7 @@ export default function Index() {
                       </div>
                     </CardContent>
                   </Card>
-                </div>
+                </motion.div>
               ))}
             </div>
 
@@ -577,7 +710,7 @@ export default function Index() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>
