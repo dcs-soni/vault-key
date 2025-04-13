@@ -23,7 +23,7 @@ import { useAnimation } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 export default function Index() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [_mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [activeSection, setActiveSection] = useState("hero");
 
   const navigate = useNavigate();
@@ -35,9 +35,9 @@ export default function Index() {
 
   const heroControls = useAnimation();
 
-  const handleNavigation = (isSignUp: boolean) => {
-    navigate("/login", { state: { isSignUp } });
-  };
+  // const handleNavigation = (isSignUp: boolean) => {
+  //   navigate("/login", { state: { isSignUp } });
+  // };
 
   const handleGetStarted = () => {
     navigate("/auth");
