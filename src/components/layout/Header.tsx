@@ -92,12 +92,9 @@ const Header = () => {
               </Button>
             )}
 
-            <Button
-              onClick={() =>
-                navigate(isAuthenticated ? "/dashboard" : "/auth")
-              }>
-              {isAuthenticated ? "Dashboard" : "Get Started"}
-            </Button>
+            {!isAuthenticated && (
+              <Button onClick={() => navigate("/auth")}>{"Get Started"}</Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
