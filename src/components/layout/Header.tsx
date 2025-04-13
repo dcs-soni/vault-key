@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { KeyRound, Menu, Moon, Sun, X } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 
 const Header = () => {
@@ -46,7 +46,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-teal flex items-center justify-center text-white font-bold">
-              🔑
+              <KeyRound width={18} />
             </div>
             <span className="font-bold text-lg text-navy dark:text-white">
               vaultKey
@@ -87,14 +87,14 @@ const Header = () => {
                 Sign Out
               </Button>
             ) : (
-              <Button onClick={() => navigate("/auth")} variant="glass">
+              <Button onClick={() => navigate("/auth")}>
                 Sign In
               </Button>
             )}
 
-            {!isAuthenticated && (
+            {/* {!isAuthenticated && (
               <Button onClick={() => navigate("/auth")}>{"Get Started"}</Button>
-            )}
+            )} */}
           </div>
 
           {/* Mobile Menu Button */}
