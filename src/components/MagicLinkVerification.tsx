@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../services/authService";
-import { masterPasswordService } from "../services/masterPasswordService";
+// import { masterPasswordService } from "../services/masterPasswordService";
 
 export function MagicLinkVerification() {
   const navigate = useNavigate();
@@ -33,9 +33,9 @@ export function MagicLinkVerification() {
           await new Promise((resolve) => setTimeout(resolve, 500));
 
           try {
-            // Check if user has a master password
-            const hasMasterPassword =
-              await masterPasswordService.hasMasterPassword();
+            // // Check if user has a master password
+            // const hasMasterPassword =
+            //   await masterPasswordService.hasMasterPassword();
 
             // Set the authentication status
             localStorage.setItem("isAuthenticated", "true");

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -53,13 +53,14 @@ import { masterPasswordService } from "../services/masterPasswordService";
 export default function Dashboard() {
   const navigate = useNavigate();
   const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  const userEmail = localStorage.getItem("userEmail") || "";  // Get user email
+  const userEmail = localStorage.getItem("userEmail") || ""; // Get user email
 
   // Use Dexie's live query to get only the current user's passwords
-  const passwords = useLiveQuery(
-    () => db.passwords.where('userId').equals(userEmail).toArray(),
-    [userEmail]
-  ) || [];
+  const passwords =
+    useLiveQuery(
+      () => db.passwords.where("userId").equals(userEmail).toArray(),
+      [userEmail]
+    ) || [];
 
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -69,7 +70,9 @@ export default function Dashboard() {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
-  const [editingPasswordId, setEditingPasswordId] = useState<number | null>(null);
+  const [editingPasswordId, setEditingPasswordId] = useState<number | null>(
+    null
+  );
   const [newPassword, setNewPassword] = useState<Omit<Password, "id">>({
     userId: userEmail,
     title: "",
@@ -82,17 +85,21 @@ export default function Dashboard() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState<boolean | null>(null);
-  const [isMasterPasswordVerified, setIsMasterPasswordVerified] = useState(false);
+  const [isMasterPasswordVerified, setIsMasterPasswordVerified] =
+    useState(false);
 
-  const initializeData = async () => {
+  const initializeData = useCallback(async () => {
     try {
       // Ensure database is initialized
       await db.initialize();
-      
-      const count = await db.passwords.where('userId').equals(userEmail).count();
+
+      const count = await db.passwords
+        .where("userId")
+        .equals(userEmail)
+        .count();
       if (count === 0) {
         const samplePassword = {
-          userId: userEmail,  // Add userId
+          userId: userEmail, // Add userId
           title: "Google",
           username: "user@example.com",
           password: "StrongPassword123!",
@@ -109,16 +116,18 @@ export default function Dashboard() {
       toast.error("Failed to initialize dashboard data");
       return false;
     }
-  };
+  }, [userEmail]);
 
   useEffect(() => {
     const checkMasterPasswordStatus = async () => {
       try {
         setIsLoading(true);
-        const hasMasterPassword = await masterPasswordService.hasMasterPassword();
+        const hasMasterPassword =
+          await masterPasswordService.hasMasterPassword();
         setIsNewUser(!hasMasterPassword);
-        
-        const isVerified = localStorage.getItem("masterPasswordVerified") === "true";
+
+        const isVerified =
+          localStorage.getItem("masterPasswordVerified") === "true";
         if (isVerified) {
           const initialized = await initializeData();
           if (initialized) {
@@ -141,7 +150,7 @@ export default function Dashboard() {
     if (isAuthenticated) {
       checkMasterPasswordStatus();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, initializeData]);
 
   const handleMasterPasswordSuccess = async () => {
     try {
@@ -212,7 +221,9 @@ export default function Dashboard() {
     if (isNewUser) {
       return <MasterPasswordSetup onSuccess={handleMasterPasswordSuccess} />;
     }
-    return <MasterPasswordVerification onSuccess={handleMasterPasswordSuccess} />;
+    return (
+      <MasterPasswordVerification onSuccess={handleMasterPasswordSuccess} />
+    );
   }
 
   const filteredPasswords = passwords.filter((password) => {
@@ -252,7 +263,7 @@ export default function Dashboard() {
         setShowEditDialog(true);
       }
     } catch (error) {
-      toast.error("Failed to retrieve password");
+      toast.error(`Failed to retrieve password - ${error}`);
     }
   };
 
@@ -274,7 +285,7 @@ export default function Dashboard() {
 
       await db.passwords.update(editingPasswordId, {
         ...newPassword,
-        userId: userEmail,  // Ensure userId is preserved
+        userId: userEmail, // Ensure userId is preserved
         updatedAt: new Date(),
       });
 
@@ -292,7 +303,7 @@ export default function Dashboard() {
       });
       toast.success("Password updated successfully");
     } catch (error) {
-      toast.error("Failed to update password");
+      toast.error(`Failed to update password - ${error}`);
     }
   };
 
@@ -311,7 +322,7 @@ export default function Dashboard() {
       await db.passwords.delete(numericId);
       toast.success("Password deleted successfully");
     } catch (error) {
-      toast.error("Failed to delete password");
+      toast.error(`Failed to delete password - ${error}`);
     }
   };
 
@@ -331,7 +342,7 @@ export default function Dashboard() {
     try {
       await db.passwords.add({
         ...newPassword,
-        userId: userEmail,  // Add userId
+        userId: userEmail, // Add userId
         updatedAt: new Date(),
       });
 
@@ -356,7 +367,7 @@ export default function Dashboard() {
         }, 500);
       }
     } catch (error) {
-      toast.error("Failed to add password");
+      toast.error(`Failed to add password - ${error}`);
     }
   };
 
@@ -380,9 +391,9 @@ export default function Dashboard() {
     }
   };
 
-  const handleCategorySelect = (category: string | null) => {
-    setSelectedCategory(category);
-  };
+  // const handleCategorySelect = (category: string | null) => {
+  //   setSelectedCategory(category);
+  // };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -883,4 +894,4 @@ export default function Dashboard() {
       </Dialog>
     </div>
   );
-};
+}
