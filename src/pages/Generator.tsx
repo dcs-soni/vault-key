@@ -4,6 +4,7 @@ import { Shield, ListChecks, Save, Copy } from "lucide-react";
 import Header from "@/components/layout/Header";
 import PasswordGenerator from "@/components/ui/PasswordGenerator";
 import { toast } from "sonner";
+import Footer from "@/components/layout/Footer";
 
 const Generator = () => {
   const [currentPassword, setCurrentPassword] = useState<string>("");
@@ -132,6 +133,8 @@ const Generator = () => {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 };

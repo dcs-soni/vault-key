@@ -49,6 +49,7 @@ import { db, Password } from "@/db/db";
 import { MasterPasswordSetup } from "../components/MasterPasswordSetup";
 import { MasterPasswordVerification } from "../components/MasterPasswordVerification";
 import { masterPasswordService } from "../services/masterPasswordService";
+import Footer from "@/components/layout/Footer";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -892,6 +893,8 @@ export default function Dashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Footer />
     </div>
   );
 }
