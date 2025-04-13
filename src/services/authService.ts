@@ -1,4 +1,6 @@
-import magic from "@/lib/magic";
+import { Magic } from 'magic-sdk';
+
+export const magic = new Magic(import.meta.env.VITE_MAGIC_PUBLISHABLE_KEY);
 
 export interface AuthResponse {
   success: boolean;
@@ -24,15 +26,35 @@ export const authService = {
 
   async verifyMagicLink(): Promise<AuthResponse> {
     try {
-      // Finish the authentication process
-      await magic.auth.loginWithCredential();
+      // Wait for a small delay to ensure Magic SDK is ready
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Check if user is logged in after validation
+      // Try to complete the authentication
+      try {
+        await magic.auth.loginWithCredential();
+      } catch (error) {
+        // Ignore the initial RPC error as it might be a false negative
+        console.log("Initial verification attempt:", error);
+      }
+
+      // Double check the login status
       const isLoggedIn = await magic.user.isLoggedIn();
 
       if (isLoggedIn) {
         localStorage.setItem("isAuthenticated", "true");
         return { success: true };
+      }
+
+      // If not logged in, try one more time
+      try {
+        await magic.auth.loginWithCredential();
+        const retryLogin = await magic.user.isLoggedIn();
+        if (retryLogin) {
+          localStorage.setItem("isAuthenticated", "true");
+          return { success: true };
+        }
+      } catch (error) {
+        console.log("Retry verification attempt:", error);
       }
 
       return {
@@ -51,6 +73,8 @@ export const authService = {
     try {
       await magic.user.logout();
       localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("hasMasterPassword");
+      localStorage.removeItem("userEmail");
     } catch (error) {
       console.error("Error during logout:", error);
     }
