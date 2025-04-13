@@ -49,7 +49,10 @@ const Header = () => {
               <KeyRound width={18} />
             </div>
             <span className="font-bold text-lg text-navy dark:text-white">
-              vaultKey
+              {/* vaultKey */}
+
+              <span className="text-navy dark:text-white">vault</span>
+                <span className="bg-clip-text text-transparent bg-gradient-teal">Key</span>
             </span>
           </Link>
 

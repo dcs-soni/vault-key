@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useAnimation } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { motion } from 'framer-motion';
+import Footer from "@/components/layout/Footer";
 
 export default function Index() {
   const [_mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -187,7 +188,7 @@ export default function Index() {
               <motion.p className="text-body text-gray-600 dark:text-gray-300 mb-8 max-w-md" initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.4 }}>
-                VaultKey combines military-grade encryption with intuitive design. Manage your passwords with confidence, knowing your data never leaves your device unprotected.
+                VaultKey combines elegant encryption with intuitive design. Manage your passwords with confidence, knowing your data never leaves your device unprotected.
               </motion.p>
 
               <motion.div className="flex items-center space-x-4" initial={{ opacity: 0 }}
@@ -713,6 +714,7 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
