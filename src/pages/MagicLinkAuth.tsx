@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 export default function MagicLinkAuth() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [isLinkSent, setIsLinkSent] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();

@@ -38,7 +38,7 @@ export function MasterPasswordVerification({
       }
     } catch (err) {
       setError("An error occurred while verifying the password");
-      toast.error("An error occurred while verifying the password");
+      toast.error(`An error occurred while verifying the password - ${err}`);
     } finally {
       setIsLoading(false);
     }
@@ -62,9 +62,7 @@ export function MasterPasswordVerification({
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium">
+                <label htmlFor="password" className="text-sm font-medium">
                   Master Password
                 </label>
                 <div className="relative">
@@ -76,8 +74,8 @@ export function MasterPasswordVerification({
                     className={cn(
                       "h-12 px-4 text-base rounded-lg transition-all duration-200",
                       "border-2 focus:ring-2 focus:ring-offset-2",
-                      error 
-                        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                      error
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                         : "border-gray-200 dark:border-gray-800 focus:border-primary focus:ring-primary/20"
                     )}
                     placeholder="Enter your master password"
@@ -88,8 +86,7 @@ export function MasterPasswordVerification({
                     variant="ghost"
                     size="icon"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
+                    onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </Button>
                 </div>
@@ -102,20 +99,19 @@ export function MasterPasswordVerification({
                 </div>
               )}
 
-              <Button 
+              <Button
                 type="submit"
                 variant="teal"
                 size="xl"
                 className="w-full"
-                disabled={isLoading || !password}
-              >
+                disabled={isLoading || !password}>
                 {isLoading ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     <span>Verifying...</span>
                   </div>
                 ) : (
-                  'Access Dashboard'
+                  "Access Dashboard"
                 )}
               </Button>
             </div>
